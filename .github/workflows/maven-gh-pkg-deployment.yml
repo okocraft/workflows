@@ -25,6 +25,6 @@ jobs:
           distribution: ${{ inputs.distribution }}
           cache: 'maven'
       - name: Publish
-        run: mvn --batch-mode deploy
+        run: mvn -B deploy --file pom.xml -Djava.version=${{ inputs.java-version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
