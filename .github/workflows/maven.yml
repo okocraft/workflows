@@ -9,6 +9,10 @@ on:
         required: false
         type: string
         default: "temurin"
+      artifact-directory:
+        required: false
+        type: string
+        default: "target"
 
 jobs:
   build:
@@ -28,4 +32,4 @@ jobs:
         continue-on-error: true
         with:
           name: Package-Java-${{ inputs.java-version }}
-          path: target
+          path: $${{ inputs.artifact-directory }}
