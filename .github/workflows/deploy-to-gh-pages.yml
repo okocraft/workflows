@@ -1,0 +1,32 @@
+name: Deploy to GitHub Pages
+on:
+  workflow_call:
+    inputs:
+      project-version:
+        required: true
+        type: string
+      artifact-name:
+        required: true
+        type: string
+      target-branch-name:
+        required: false
+        type: string
+        default: "gh-pages"
+
+jobs:
+  docs:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v3.0.0
+      - name: Download Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: staging/${{ inputs.project-version }}
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: ${{ inputs.target-branch-name }}
+          folder: staging
+          token: ${{ secrets.GITHUB_TOKEN }}
+          clean: false
