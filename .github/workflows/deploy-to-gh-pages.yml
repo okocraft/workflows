@@ -24,7 +24,7 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: staging/${{ inputs.project-version }}
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        uses: JamesIves/github-pages-deploy-action@v4.3.2
         with:
           branch: ${{ inputs.target-branch-name }}
           folder: staging
