@@ -41,7 +41,7 @@ jobs:
           arguments: ${{ inputs.build-arguments }}
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         continue-on-error: true
         with:
           name: ${{ inputs.package-name }}-Java-${{ inputs.java-version }}
