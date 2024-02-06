@@ -43,7 +43,7 @@ jobs:
           chmod +x ./gradlew
           ./gradlew ${{ inputs.build-arguments }}
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@v4.3.1
         continue-on-error: true
         with:
           name: ${{ inputs.package-name }}-Java-${{ inputs.java-version }}
