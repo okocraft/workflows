@@ -12,17 +12,34 @@ on:
         required: false
         type: string
         default: "gh-pages"
+      update-latest:
+        required: false
+        type: boolean
+        default: false
+      versioned-page:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   docs:
     runs-on: "ubuntu-latest"
+    if: ${{ inputs.versioned-page || inputs.update-latest  }}
     steps:
       - uses: actions/checkout@v4.1.1
       - name: Download Artifact
         uses: actions/download-artifact@v4.1.2
         with:
           name: ${{ inputs.artifact-name }}
-          path: staging/${{ inputs.project-version }}
+          path: source
+      - name: Create staging directory
+        run: mkdir staging
+      - name: Copy to versioned page
+        if: ${{ inputs.versioned-page }}
+        run: cp -r source staging/${{ inputs.project-version }}
+      - name: Copy to latest
+        if: ${{ inputs.update-latest }}
+        run: cp -r source staging/latest
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
