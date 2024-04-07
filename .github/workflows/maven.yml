@@ -25,6 +25,14 @@ on:
         required: false
         type: boolean
         default: true
+      upload-test-results:
+        required: false
+        type: boolean
+        default: false
+      test-result-paths:
+        required: false
+        type: string
+        default: "**/target/surefire-reports/TEST-*.xml"
 
 jobs:
   build:
@@ -39,6 +47,12 @@ jobs:
           cache: 'maven'
       - name: Build with Maven
         run: mvn -B ${{ inputs.build-arguments }} --file pom.xml -Djava.version=${{ inputs.java-version }}
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4.2.1
+        if: ${{ inputs.upload-test-results && (success() || failure()) }}
+        with:
+          report_paths: ${{ inputs.test-result-paths }}
+          check_name: JUnit Test Report (Java ${{ inputs.java-version }})
       - name: Upload artifacts
         if: ${{ inputs.upload-artifacts }}
         uses: actions/upload-artifact@v4.3.1
