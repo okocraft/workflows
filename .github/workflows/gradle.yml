@@ -25,6 +25,17 @@ on:
         required: false
         type: boolean
         default: true
+      cache-disabled:
+        required: false
+        type: boolean
+        default: false
+      caching-refs:
+        required: false
+        type: string
+        default: |
+          refs/heads/main
+          refs/heads/master
+          refs/heads/develop
 
 jobs:
   build:
@@ -41,7 +52,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3.2.0
         with:
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
+          cache-disabled: ${{ inputs.cache-disabled }}
+          cache-read-only: ${{ !contains(inputs.caching-refs, github.ref) }}
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
