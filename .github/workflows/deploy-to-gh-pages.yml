@@ -41,7 +41,7 @@ jobs:
         if: ${{ inputs.update-latest }}
         run: cp -r source staging/latest
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.0
+        uses: JamesIves/github-pages-deploy-action@v4.6.1
         with:
           branch: ${{ inputs.target-branch-name }}
           folder: staging
