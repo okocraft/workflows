@@ -26,9 +26,9 @@ jobs:
     runs-on: "ubuntu-latest"
     if: ${{ inputs.versioned-page || inputs.update-latest  }}
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
       - name: Download Artifact
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           name: ${{ inputs.artifact-name }}
           path: source
@@ -41,7 +41,7 @@ jobs:
         if: ${{ inputs.update-latest }}
         run: cp -r source staging/latest
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.0
+        uses: JamesIves/github-pages-deploy-action@ec9c88baef04b842ca6f0a132fd61c762aa6c1b0 # v4.6.0
         with:
           branch: ${{ inputs.target-branch-name }}
           folder: staging
