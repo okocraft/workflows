@@ -44,6 +44,10 @@ on:
           refs/heads/main
           refs/heads/master
           refs/heads/develop
+      working-dir:
+        required: false
+        type: string
+        default: "."
 
 jobs:
   build:
@@ -61,6 +65,7 @@ jobs:
           cache-disabled: ${{ inputs.cache-disabled }}
           cache-read-only: ${{ !contains(inputs.caching-refs, github.ref) }}
       - name: Build with Gradle
+        working-directory: ${{ inputs.working-dir }}
         run: |
           chmod +x ./gradlew
           ./gradlew ${{ inputs.build-arguments }}
