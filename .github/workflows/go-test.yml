@@ -1,0 +1,83 @@
+name: Go Test
+on:
+  workflow_call:
+    inputs:
+      os:
+        type: string
+        required: false
+        default: "ubuntu-latest"
+      enable-cache:
+        type: boolean
+        required: false
+        default: true
+      additional-arguments:
+        type: string
+        required: false
+        default: ""
+      upload-results:
+        required: false
+        type: boolean
+        default: false
+      working-dir:
+        required: false
+        type: string
+        default: "."
+      go-version:
+        required: false
+        type: string
+      gotestsum-version:
+        required: false
+        type: string
+        default: "1.13.0"
+
+jobs:
+  build:
+    runs-on: ${{ inputs.os }}
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - name: "Set up Go"
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
+        with:
+          go-version: ${{ inputs.go-version }}
+          go-version-file: ${{ inputs.working-dir }}/go.mod
+          cache: ${{ inputs.enable-cache }}
+          cache-dependency-path: |
+            ${{ inputs.working-dir }}/go.sum
+      - name: "Download gotestsum"
+        id: download-gotestsum
+        run: |
+          GOTESTSUM_DIR="$RUNNER_TEMP/gotestsum"
+          GOTESTSUM_BIN_DIR="$GOTESTSUM_DIR/bin"
+          GOTESTSUM_BIN="$GOTESTSUM_BIN_DIR/gotestsum"
+          GOTESTSUM_DOWNLOAD_NAME="gotestsum_${{ inputs.gotestsum-version }}_linux_amd64.tar.gz"
+
+          mkdir -p "$GOTESTSUM_BIN_DIR"
+
+          gh release download v${{ inputs.gotestsum-version }} \
+            --repo gotestyourself/gotestsum \
+            --pattern "$GOTESTSUM_DOWNLOAD_NAME" \
+            --dir "$GOTESTSUM_DIR"
+
+          tar -xzf "$GOTESTSUM_DIR/$GOTESTSUM_DOWNLOAD_NAME" -C "$GOTESTSUM_BIN_DIR"
+          chmod +x "$GOTESTSUM_BIN"
+          echo "bin=$GOTESTSUM_BIN" > "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Test"
+        id: test
+        working-directory: ${{ inputs.working-dir }}
+        run: |
+          JUNIT_REPORT_DIR="$RUNNER_TEMP/junit-reports"
+          JUNIT_REPORT_FILE="$JUNIT_REPORT_DIR/test-results.xml"
+          mkdir "$JUNIT_REPORT_DIR"
+
+          "${{ steps.download-gotestsum.outputs.bin }}" --junitfile "$JUNIT_REPORT_FILE" ${{ inputs.additional-arguments }}
+
+          echo "result-filepath=$JUNIT_REPORT_FILE" > "$GITHUB_OUTPUT"
+      - name: "Upload Results"
+        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6 # v6.0.1
+        if: ${{ inputs.upload-results && (success() || failure()) }}
+        continue-on-error: true
+        with:
+          report_paths: ${{ steps.test.outputs.result-filepath }}
+          check_name: Test Report
