@@ -49,6 +49,7 @@ jobs:
         run: |
           maven_command=mvn
           if [ -f ./mvnw ]; then
+            chmod +x ./mvnw
             maven_command=./mvnw
           fi
           "$maven_command" -B ${{ inputs.build-arguments }} --file pom.xml -Djava.version=${{ inputs.java-version }}
